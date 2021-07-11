@@ -154,19 +154,18 @@ def strip_control(alliance_color, matchstate, total_cells):
 			LED_Score(alliance_color, total_cells)
 	#pause
 	elif matchstate == 4:
-		if total_cells > LED_MAX_SCORE:
-			theaterChase(alliance_color)
-		else:
-			LED_Score(alliance_color, total_cells)
+		LED_Score_Simulation(alliance_color, total_cells)
 	#teleop
 	elif matchstate == 5:
 		if total_cells > LED_MAX_SCORE:
 			theaterChase(alliance_color)
 		else:
-			LED_Score(alliance_color, total_cells)
+			#LED_Score(alliance_color, total_cells)
+			LED_Score_Simulation(alliance_color, total_cells)
 	#post match
 	elif matchstate == 6:
-		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
+		LED_Score_Simulation(alliance_color, total_cells)
+		#strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
 	else:
 		pass
 	
@@ -203,7 +202,21 @@ def xtheaterChase(alliance_color):
             strip.setPixelColor(i+q, 0)
             
             
-def printFieldState(matchstate):
-    print('************************')
-    print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
-    print('************************')
+def LED_Score_Simulation(alliance_color, total_cells):
+    #stage 1
+	if (total_cells > 15):
+	    total_cells = 15
+	
+	led_range = get_powercell_capacity_range(1,total_cells)
+	print(led_range)
+	print(int(led_range[0]))
+	print(led_range[1])
+	for i in range(LED_SOL, strip.numPixels(), 5):
+	    if ((i) > (led_range[0]*5) and (i) < (led_range[1]*5)):
+		    for j in range(5):
+			    strip.setPixelColor(i+j, get_aliance_color_RGB(alliance_color))
+	    else:
+		    for j in range(5):
+			    strip.setPixelColor(i+j, 0)
+	strip.show()
+    
