@@ -9,13 +9,22 @@ import argparse
 import cheesePowerPortRGB as RGB
 from rpi_ws281x import Color
 
+"""
+Global Variables to track
+Field State and power Cells
+"""
 last_matchstate = 0
 total_cells = 0
 
-
+"""
+Set up GPIO
+"""
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
+"""
+Constans
+"""
 FMS_IP = "10.0.100.05"
 FMS_PORT = "8080"
 FMS_SERVER = FMS_IP + ":" + FMS_PORT
@@ -40,6 +49,11 @@ matchStatus_map = {
 
 """
 Map Key Stroke Sets
+AUTO: Add Score to the Auto
+Teleop: Add Score to the Teleop
+UNKNOWN: This was the Keystrokes use when we did not have game status in PI. 
+        If using a Modified Fork of Cheesy arena that detects these inputs it
+        will add the appreate counter
 """
 goal_basic_char_msg_map = {
     "AUTO": {"I": '{ "type": "W" }',
@@ -50,13 +64,13 @@ goal_basic_char_msg_map = {
                "O": '{ "type": "F" }',
                "L": '{ "type": "V" }'
             },
-    "SIMPLE": {"I": '{ "type": "CI" }',
+    "UNKNOWN": {"I": '{ "type": "CI" }',
                "O": '{ "type": "CO" }',
                "L": '{ "type": "CL" }'
             }
 }
 
-#Global Counters
+#Global internal Counters
 innerCount = 0
 outerCount = 0
 lowerCount = 0
@@ -78,7 +92,9 @@ LED_Pin = 32
 GPIO.setup(LED_Pin,GPIO.OUT)
 GPIO.output(LED_Pin,0)
 
-
+"""
+Call Back functions
+"""
 ###############################
 ## Inerner Count Input setup ##
 ###############################
@@ -123,6 +139,10 @@ def lower_callback(channel):
     
 GPIO.add_event_detect(lowerCount_Pin,GPIO.RISING,callback=lower_callback, bouncetime=200)
 
+
+"""
+Helpers to get variables
+"""
 #Function to wait for a Power Cell to be scored
 def get_power_cell_to_count():
     global innerCount
@@ -140,19 +160,26 @@ def get_charset_from_basic_goal(matchState):
 def get_msg_from_basic_goal_char(matchState, goal_char):
     return goal_basic_char_msg_map[matchState][goal_char]
     
-
+"""
+Sign of Life
+Blinks a GPIO pin as well as a presellected count of the RGB LED to 
+show Communications are active to Cheesy Arena
+Flip Flop on every MSG recieved
+"""
 def blink_led():
     if GPIO.input(LED_Pin):
-        #myfill(Color(255, 0, 0))
+        #RGB.strip_fill(Color(255, 0, 0))
         RGB.strip_set_LED(0,RGB.LED_SOL,Color(63,63,63))
         GPIO.output(LED_Pin,0)
     else:
-        #myfill(Color(0, 0, 255))
+        #RGB.strip_fill(Color(0, 0, 255))
         RGB.strip_set_LED(0,RGB.LED_SOL,Color(255,255,255))
         GPIO.output(LED_Pin,1)
         
 
-
+"""
+Parse's the MSG recieved
+"""
 def ws_msg(self, msg):
     global last_matchstate
     global total_cells
@@ -203,19 +230,12 @@ def ws_msg(self, msg):
                     if "TotalCells" in s:
                         total_cells = s["TotalCells"]
                         print(f"Total Power Cells:           {c}")
-                        
+    # Update RGB LED Strip                    
     RGB.strip_control(ALLIANCE_COLOR, last_matchstate, total_cells) 
-                        #strip_control(last_matchstate, total_cells)
-                        #useable = strip.numPixels() - LED_SOL
-                        #strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
-                        #strip_set_LED(LED_SOL,int(c/30*useable),get_aliance_color_RGB(ALLIANCE_COLOR))
-                    
 
-    
-        
-
-
-    
+"""
+Create the Thread that handle all the WebSocket actions
+"""    
 def get_on_ws_open_callback():
     def on_ws_open(ws):
         print("Connected to FMS")
@@ -257,7 +277,7 @@ def get_on_ws_open_callback():
                 elif (last_matchstate >= 5 and last_matchstate < 6):
                         matchState = "TELEOP"
                 else:
-                        matchState = "SIMPLE"
+                        matchState = "UNKNOWN"
                         
                 mode = get_charset_from_basic_goal(matchState)
                
@@ -277,6 +297,9 @@ def get_on_ws_open_callback():
     
     return on_ws_open
     
+"""
+Open up a Websocket to Cheesy Arena
+"""
 def open_websocket():
     def reopen_websocket():
         print("attempt to ReOpen Websocket")

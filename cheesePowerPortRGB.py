@@ -88,6 +88,9 @@ aliance_colors_map = {
     "blue": Color(0, 0, 255)
 }
 
+"""
+Create a RGB LED Strip with over ride values
+"""
 def create_strip(led_count, led_pin, led_sol, max_score,color):
     global LED_COUNT
     global LED_PIN
@@ -99,7 +102,9 @@ def create_strip(led_count, led_pin, led_sol, max_score,color):
     LED_MAX_SCORE = max_score
     create_default_strip(color)
     
-
+"""
+Create the RGB LED Strip
+"""
 def create_default_strip(color):
     global strip
     # Create NeoPixel object with appropriate configuration.
@@ -112,17 +117,23 @@ def create_default_strip(color):
         strip.setPixelColor(i+2, Color(0,0,0))
         strip.setPixelColor(i+3, Color(0,0,0))
     strip.show()
-    
+   
+"""
+Helpers to get variables
+"""
 def get_powercell_capacity_range(stage, capacity):
     return powercell_capacity_map[stage][capacity]
 
-	
 def get_field_color_RGB(status_color):
     return field_color_map[status_color]
     
 def get_aliance_color_RGB(alliance_color):
     return aliance_colors_map[alliance_color]
 	
+"""
+Fill Strip with given Color
+Acnolaging the Sign Of Life LED's
+"""
 def strip_set_LED(startLED, lastLED, color):
     if lastLED > strip.numPixels():
 	    lastLED = strip.numPixels()
@@ -130,12 +141,18 @@ def strip_set_LED(startLED, lastLED, color):
 	    strip.setPixelColor(i, color)
     strip.show()
     
-def myfill(color):
+"""
+Fill Entire Strip with given Color
+"""
+def strip_fill(color):
     print("myFill enter")
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
     strip.show()
 
+"""
+This Defenition is called after each message to set the LED depending on the field State
+"""
 def strip_control(alliance_color, matchstate, total_cells):
 	#prematch
 	if matchstate == 0:
@@ -169,7 +186,10 @@ def strip_control(alliance_color, matchstate, total_cells):
 		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
 	else:
 		pass
-	
+
+"""
+Simple Fill Strip from the start to the End by the percentage of scored
+"""	
 def LED_Score(alliance_color, total_cells):
 	useable = strip.numPixels() - LED_SOL
 	""" Fill strip with Percentage relitive to max"""
@@ -183,7 +203,11 @@ def LED_Score(alliance_color, total_cells):
 	for i in range(blankStart,LED_COUNT):
 		strip.setPixelColor(i, Color(0,0,0))
 	strip.show()
-	
+
+"""
+start of Marque
+Currently does not animate. Will need to revisit making sure we don't block the code
+"""	
 def theaterChase(alliance_color):
     """Movie theater light style chaser animation."""
     for i in range(LED_SOL, strip.numPixels(), 2):
@@ -191,18 +215,12 @@ def theaterChase(alliance_color):
     for i in range(LED_SOL, strip.numPixels(), 2):
         strip.setPixelColor(i+1, Color(100,100,100))
     
-    strip.show()
-
-def xtheaterChase(alliance_color):
-    """Movie theater light style chaser animation."""
-    for q in range(3):
-        for i in range(LED_SOL, strip.numPixels(), 3):
-            strip.setPixelColor(i+q, get_aliance_color_RGB(alliance_color))
-        strip.show()
-        for i in range(LED_SOL, strip.numPixels(), 3):
-            strip.setPixelColor(i+q, 0)
-            
-            
+    strip.show()        
+      
+      
+"""
+Debug Code
+"""
 def printFieldState(matchstate):
     print('************************')
     print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
