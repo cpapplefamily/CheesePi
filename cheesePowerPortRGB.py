@@ -18,16 +18,63 @@ LED_SOL		= 5		#Number of Sign Of Life LED's
 LED_MAX_SCORE  	= 30		# Power Cell Max Score
 
 
-matchStatus_map = {
-	0: "Feild Safe",
-	1: "pre match",
-	2: "pre match",
-	3: "in Auto",
-	4: "Pause After Auto",
-	5: "in match",
-	6: "Match Complete"
-}
+"""
+stage:capacity
+Stage 1
+Stage 2-3
 
+#Samle:
+c = get_powercell_capacity_range(1,1)
+print(c)
+print(c[1])
+"""
+powercell_capacity_map = {
+    1: {1: (14,17),
+	2: (11,20),
+	3: (9,22),
+	4: (7,24),
+	5: (5,26),
+	6: (4,27),
+	7: (3,28),
+	8: (2,29),
+	9: (1,30),
+	10: (1,30),
+	11: (1,30),
+	12: (1,30),
+	13: (1,30),
+	14: (1,30),
+	15: (1,30)},
+    2: {1: (15,16),
+	2: (14,17),
+	3: (13,18),
+	4: (12,19),
+	5: (11,20),
+	6: (10,21),
+	7: (9,22),
+	8: (8,23),
+	9: (7,24),
+	10: (6,25),
+	11: (5,26),
+	12: (4,27),
+	13: (3,28),
+	14: (2,29),
+	15: (1,30)},
+    3: {1: (15,16),
+	2: (14,17),
+	3: (13,18),
+	4: (12,19),
+	5: (11,20),
+	6: (10,21),
+	7: (9,22),
+	8: (8,23),
+	9: (7,24),
+	10: (6,25),
+	11: (5,26),
+	12: (4,27),
+	13: (3,28),
+	14: (2,29),
+	15: (1,30)}
+}
 
 field_color_map = {
     "green": Color(0,255,0),
@@ -66,8 +113,9 @@ def create_default_strip(color):
         strip.setPixelColor(i+3, Color(0,0,0))
     strip.show()
     
-def get_matchStatus_txt(status):
-	return matchStatus_map[status]
+def get_powercell_capacity_range(stage, capacity):
+    return powercell_capacity_map[stage][capacity]
+
 	
 def get_field_color_RGB(status_color):
     return field_color_map[status_color]
@@ -76,11 +124,11 @@ def get_aliance_color_RGB(alliance_color):
     return aliance_colors_map[alliance_color]
 	
 def strip_set_LED(startLED, lastLED, color):
-	if lastLED > strip.numPixels():
-		lastLED = strip.numPixels()
-	for i in range(startLED,lastLED):
-		strip.setPixelColor(i, color)
-	strip.show()
+    if lastLED > strip.numPixels():
+	    lastLED = strip.numPixels()
+    for i in range(startLED,lastLED):
+	    strip.setPixelColor(i, color)
+    strip.show()
     
 def myfill(color):
     print("myFill enter")
@@ -89,23 +137,34 @@ def myfill(color):
     strip.show()
 
 def strip_control(alliance_color, matchstate, total_cells):
-	#printFieldState(matchstate)
+	#prematch
 	if matchstate == 0:
 		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("green"))
+	#prematch
 	elif matchstate == 1:
 		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+	#prematch
 	elif matchstate == 2:
 		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+	#auto
 	elif matchstate == 3:
-		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("yellow"))
+		if total_cells > LED_MAX_SCORE:
+			theaterChase(alliance_color)
+		else:
+			LED_Score(alliance_color, total_cells)
+	#pause
 	elif matchstate == 4:
-		pass
-		#strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+		if total_cells > LED_MAX_SCORE:
+			theaterChase(alliance_color)
+		else:
+			LED_Score(alliance_color, total_cells)
+	#teleop
 	elif matchstate == 5:
 		if total_cells > LED_MAX_SCORE:
 			theaterChase(alliance_color)
 		else:
 			LED_Score(alliance_color, total_cells)
+	#post match
 	elif matchstate == 6:
 		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
 	else:
@@ -145,6 +204,6 @@ def xtheaterChase(alliance_color):
             
             
 def printFieldState(matchstate):
-	print('************************')
-	print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
-	print('************************')
+    print('************************')
+    print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
+    print('************************')
