@@ -2,14 +2,18 @@ from rpi_ws281x import *
 
 # LED strip configuration:
 strip = None
-LED_COUNT      	= 300      # Number of LED pixels.
-LED_PIN        	= 18      # GPIO pin connected to the pixels (18 uses PWM!).
 #LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 LED_FREQ_HZ    	= 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        	= 10      # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS 	= 10     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     	= False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    	= 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+"""
+These are only Default
+The following can be over rode when constructing the LED Strip
+"""
+LED_COUNT      	= 300      # Number of LED pixels.
+LED_PIN        	= 18      # GPIO pin connected to the pixels (18 uses PWM!).
 LED_SOL		= 5		#Number of Sign Of Life LED's 
 LED_MAX_SCORE  	= 30		# Power Cell Max Score
 
@@ -37,14 +41,19 @@ aliance_colors_map = {
     "blue": Color(0, 0, 255)
 }
 
-def configStrip(led_count, led_pin, led_sol, max_score):
-    LED_COUNT      = 300      # Number of LED pixels.
-    LED_PIN
-    LED_SOL       = 5
-    LED_MAX_SCORE  = 30
+def create_strip(led_count, led_pin, led_sol, max_score,color):
+    global LED_COUNT
+    global LED_PIN
+    global LED_SOL
+    global LED_MAX_SCORE
+    LED_COUNT = led_count
+    LED_PIN = led_pin
+    LED_SOL = led_sol
+    LED_MAX_SCORE = max_score
+    create_default_strip(color)
     
 
-def create_strip(color):
+def create_default_strip(color):
     global strip
     # Create NeoPixel object with appropriate configuration.
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
@@ -108,7 +117,11 @@ def LED_Score(alliance_color, total_cells):
 	for i in range(LED_SOL,int(total_cells/LED_MAX_SCORE*useable)):
 		strip.setPixelColor(i, get_aliance_color_RGB(alliance_color))
 	""" Fill remaining strip off"""
-	for i in range(int(total_cells/LED_MAX_SCORE*useable),LED_COUNT):
+	if int(total_cells/LED_MAX_SCORE*useable)<LED_SOL:
+	    blankStart = LED_SOL
+	else:
+	    blankStart = int(total_cells/LED_MAX_SCORE*useable)
+	for i in range(blankStart,LED_COUNT):
 		strip.setPixelColor(i, Color(0,0,0))
 	strip.show()
 	
