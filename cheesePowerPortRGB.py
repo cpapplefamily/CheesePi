@@ -76,17 +76,6 @@ powercell_capacity_map = {
 	15: (1,30)}
 }
 
-matchStatus_map = {
-	0: "Feild Safe",
-	1: "pre match",
-	2: "pre match",
-	3: "in Auto",
-	4: "Pause After Auto",
-	5: "in match",
-	6: "Match Complete"
-}
-
-
 field_color_map = {
     "green": Color(0,255,0),
     "violet": Color(150,0,150),
@@ -126,9 +115,7 @@ def create_default_strip(color):
     
 def get_powercell_capacity_range(stage, capacity):
     return powercell_capacity_map[stage][capacity]
-	
-def get_matchStatus_txt(status):
-    return matchStatus_map[status]
+
 	
 def get_field_color_RGB(status_color):
     return field_color_map[status_color]
@@ -150,23 +137,34 @@ def myfill(color):
     strip.show()
 
 def strip_control(alliance_color, matchstate, total_cells):
-	#printFieldState(matchstate)
+	#prematch
 	if matchstate == 0:
 		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("green"))
+	#prematch
 	elif matchstate == 1:
 		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+	#prematch
 	elif matchstate == 2:
 		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+	#auto
 	elif matchstate == 3:
-		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("yellow"))
+		if total_cells > LED_MAX_SCORE:
+			theaterChase(alliance_color)
+		else:
+			LED_Score(alliance_color, total_cells)
+	#pause
 	elif matchstate == 4:
-		pass
-		#strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+		if total_cells > LED_MAX_SCORE:
+			theaterChase(alliance_color)
+		else:
+			LED_Score(alliance_color, total_cells)
+	#teleop
 	elif matchstate == 5:
 		if total_cells > LED_MAX_SCORE:
 			theaterChase(alliance_color)
 		else:
 			LED_Score(alliance_color, total_cells)
+	#post match
 	elif matchstate == 6:
 		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
 	else:

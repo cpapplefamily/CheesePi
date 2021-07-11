@@ -24,10 +24,36 @@ ALLIANCE_COLOR = 'red' # Change accordingly
 USERNAME = 'root'
 PASSWORD = 'root'
 
-goal_char_msg_map = {
-    "I": '{ "type": "CI" }',
-    "O": '{ "type": "CO" }',
-    "L": '{ "type": "CL" }'
+
+"""
+Map all the Modes of the Field
+"""
+matchStatus_map = {
+	0: "Feild Safe",
+	1: "pre match",
+	2: "pre match",
+	3: "in Auto",
+	4: "Pause After Auto",
+	5: "in match",
+	6: "Match Complete"
+}
+
+"""
+Map Key Stroke Sets
+"""
+goal_basic_char_msg_map = {
+    "AUTO": {"I": '{ "type": "W" }',
+             "O": '{ "type": "S" }',
+             "L": '{ "type": "X" }'
+            },
+    "TELEOP": {"I": '{ "type": "R" }',
+               "O": '{ "type": "F" }',
+               "L": '{ "type": "V" }'
+            },
+    "SIMPLE": {"I": '{ "type": "CI" }',
+               "O": '{ "type": "CO" }',
+               "L": '{ "type": "CL" }'
+            }
 }
 
 #Global Counters
@@ -105,10 +131,15 @@ def get_power_cell_to_count():
     while(outerCount == 0 and innerCount == 0 and lowerCount == 0):
         one = 1
     return True
-
+    
+#Retrieve the keyStroke Set for the goal to be tallied
+def get_charset_from_basic_goal(matchState):
+    return goal_basic_char_msg_map[matchState]
+    
 #Retrieve the keyStroke char for the goal to be tallied
-def get_msg_from_goal_char(goal_char):
-    return goal_char_msg_map[goal_char]
+def get_msg_from_basic_goal_char(matchState, goal_char):
+    return goal_basic_char_msg_map[matchState][goal_char]
+    
 
 def blink_led():
     if GPIO.input(LED_Pin):
@@ -197,6 +228,10 @@ def get_on_ws_open_callback():
                 #Check for any counters that need to be tallied
                 sendData = get_power_cell_to_count()
                 #What Counter?
+                if last_matchstate < 3:
+                    outerCount == 0
+                    innerCount == 0
+                    lowerCount
                 if (outerCount > 0):
                     goal_char = "O"
                     outerCount -= 1
@@ -213,10 +248,26 @@ def get_on_ws_open_callback():
                     
                 print(f'Info: received "{goal_char}"')
                 
-                if (goal_char in goal_char_msg_map):
-                    print(f'Info: sent {get_msg_from_goal_char(goal_char)}')
+                """
+                Get the Current Match State Char Map
+                ie: AUTO or TELEOP
+                """
+                if (last_matchstate >= 3 and last_matchstate < 5):
+                        matchState = "AUTO"
+                elif (last_matchstate >= 5 and last_matchstate < 6):
+                        matchState = "TELEOP"
+                else:
+                        matchState = "SIMPLE"
+                        
+                mode = get_charset_from_basic_goal(matchState)
+               
+                """
+                If Valid then send KeyStroke
+                """
+                if (goal_char in mode):
+                    print(f'Info: sent {get_msg_from_basic_goal_char(matchState, goal_char)}')
                     try:
-                        ws.send(get_msg_from_goal_char(goal_char))
+                        ws.send(get_msg_from_basic_goal_char(matchState, goal_char))
                     except Exception:
                         open_websocket()
                 else:
