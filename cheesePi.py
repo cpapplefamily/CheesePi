@@ -255,12 +255,12 @@ def main():
     """Loops until a connection is made to the FMS.
     When connected opens a websocket 
     """
-    #led_count = 100
-    #led_pin = 18
-    #led_sol = 1
-    #led_max_score = 30
-    #RGB.create_strip(100, 18, 1, 30,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
-    RGB.create_strip(RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
+    led_count = 150
+    led_pin = 18
+    led_sol = 1
+    led_max_score = 30
+    RGB.create_strip(led_count, led_pin, led_sol, led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
+    #RGB.create_default_strip(RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
     
     #Wait for Network connection to FMS
     while(True):
