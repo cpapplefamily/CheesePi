@@ -18,6 +18,64 @@ LED_SOL		= 5		#Number of Sign Of Life LED's
 LED_MAX_SCORE  	= 30		# Power Cell Max Score
 
 
+"""
+stage:capacity
+Stage 1
+Stage 2-3
+
+#Samle:
+c = get_powercell_capacity_range(1,1)
+print(c)
+print(c[1])
+"""
+powercell_capacity_map = {
+    1: {1: (14,17),
+	2: (11,20),
+	3: (9,22),
+	4: (7,24),
+	5: (5,26),
+	6: (4,27),
+	7: (3,28),
+	8: (2,29),
+	9: (1,30),
+	10: (1,30),
+	11: (1,30),
+	12: (1,30),
+	13: (1,30),
+	14: (1,30),
+	15: (1,30)},
+    2: {1: (15,16),
+	2: (14,17),
+	3: (13,18),
+	4: (12,19),
+	5: (11,20),
+	6: (10,21),
+	7: (9,22),
+	8: (8,23),
+	9: (7,24),
+	10: (6,25),
+	11: (5,26),
+	12: (4,27),
+	13: (3,28),
+	14: (2,29),
+	15: (1,30)},
+    3: {1: (15,16),
+	2: (14,17),
+	3: (13,18),
+	4: (12,19),
+	5: (11,20),
+	6: (10,21),
+	7: (9,22),
+	8: (8,23),
+	9: (7,24),
+	10: (6,25),
+	11: (5,26),
+	12: (4,27),
+	13: (3,28),
+	14: (2,29),
+	15: (1,30)}
+}
+
 matchStatus_map = {
 	0: "Feild Safe",
 	1: "pre match",
@@ -66,8 +124,11 @@ def create_default_strip(color):
         strip.setPixelColor(i+3, Color(0,0,0))
     strip.show()
     
+def get_powercell_capacity_range(stage, capacity):
+    return powercell_capacity_map[stage][capacity]
+	
 def get_matchStatus_txt(status):
-	return matchStatus_map[status]
+    return matchStatus_map[status]
 	
 def get_field_color_RGB(status_color):
     return field_color_map[status_color]
@@ -76,11 +137,11 @@ def get_aliance_color_RGB(alliance_color):
     return aliance_colors_map[alliance_color]
 	
 def strip_set_LED(startLED, lastLED, color):
-	if lastLED > strip.numPixels():
-		lastLED = strip.numPixels()
-	for i in range(startLED,lastLED):
-		strip.setPixelColor(i, color)
-	strip.show()
+    if lastLED > strip.numPixels():
+	    lastLED = strip.numPixels()
+    for i in range(startLED,lastLED):
+	    strip.setPixelColor(i, color)
+    strip.show()
     
 def myfill(color):
     print("myFill enter")
@@ -145,6 +206,6 @@ def xtheaterChase(alliance_color):
             
             
 def printFieldState(matchstate):
-	print('************************')
-	print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
-	print('************************')
+    print('************************')
+    print(f'MatchStatus: {get_matchStatus_txt(matchstate)}')
+    print('************************')
