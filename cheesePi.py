@@ -325,6 +325,10 @@ def open_websocket():
     
 
 def main():
+            
+    """Loops until a connection is made to the FMS.
+    When connected opens a websocket 
+    """
     #Wait for Network connection to FMS
     while(True):
         print(f'Check Network Connection {FMS_IP}')
@@ -364,10 +368,7 @@ if __name__ == "__main__":
     else:
         print('Invalid Color input! Set to default red')
         ALLIANCE_COLOR = 'red'
-        
-    """Loops until a connection is made to the FMS.
-    When connected opens a websocket 
-    """
+
     RGB.create_strip(args.led_count, args.led_pin, args.led_sol, args.led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
     
     main()
