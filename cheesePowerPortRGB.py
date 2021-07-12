@@ -1,4 +1,5 @@
 from rpi_ws281x import *
+import time
 
 # LED strip configuration:
 strip = None
@@ -117,6 +118,7 @@ def create_default_strip(color):
         strip.setPixelColor(i+2, Color(0,0,0))
         strip.setPixelColor(i+3, Color(0,0,0))
     strip.show()
+    time.sleep(2)
    
 """
 Helpers to get variables
