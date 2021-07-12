@@ -28,8 +28,7 @@ Constans
 FMS_IP = "10.0.100.05"
 FMS_PORT = "8080"
 FMS_SERVER = FMS_IP + ":" + FMS_PORT
-ALLIANCE_COLOR = 'red' # Change accordingly
-#ALLIANCE_COLOR = 'blue' # Change accordingly
+ALLIANCE_COLOR = None #default red changed using runtime argument
 USERNAME = 'root'
 PASSWORD = 'root'
 
@@ -326,16 +325,6 @@ def open_websocket():
     
 
 def main():
-    """Loops until a connection is made to the FMS.
-    When connected opens a websocket 
-    """
-    led_count = 150
-    led_pin = 18
-    led_sol = 1
-    led_max_score = 30
-    RGB.create_strip(led_count, led_pin, led_sol, led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
-    #RGB.create_default_strip(RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
-    
     #Wait for Network connection to FMS
     while(True):
         print(f'Check Network Connection {FMS_IP}')
@@ -352,4 +341,33 @@ def main():
     
     
 if __name__ == "__main__":
+    # Init Process arguments
+    parser = argparse.ArgumentParser(
+        description = "Cheesy Arena Power Port Scoring Module"
+    )
+    
+    # Optional Arguments
+    parser.add_argument('-a','--alliance', help="Alliance Coler [red,blue] default = red", default = 'red', type=str)
+    parser.add_argument('-c','--led_count', help="Total number of LED's -  default = 150", default = 150, type=int)
+    parser.add_argument('-p','--led_pin', help="GPIO pin LED connected to - default = 18", default = 18, type=int)
+    parser.add_argument('-s','--led_sol', help="How many Sign of Life LED to use - default = 1", default = 1, type=int)
+    parser.add_argument('-m','--led_max_score', help="Max power Cell Count - default = 30", default =30, type=int)
+    
+    args = parser.parse_args()
+    
+    if (args.alliance.lower() == 'blue'):
+        print('Set to blue')
+        ALLIANCE_COLOR = args.alliance.lower()
+    elif (args.alliance.lower() == 'red'):
+        print('Set to red')
+        ALLIANCE_COLOR = args.alliance.lower()
+    else:
+        print('Invalid Color input! Set to default red')
+        ALLIANCE_COLOR = 'red'
+        
+    """Loops until a connection is made to the FMS.
+    When connected opens a websocket 
+    """
+    RGB.create_strip(args.led_count, args.led_pin, args.led_sol, args.led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
+    
     main()
