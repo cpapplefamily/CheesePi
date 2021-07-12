@@ -28,8 +28,7 @@ Constans
 FMS_IP = "10.0.100.05"
 FMS_PORT = "8080"
 FMS_SERVER = FMS_IP + ":" + FMS_PORT
-ALLIANCE_COLOR = 'red' # Change accordingly
-#ALLIANCE_COLOR = 'blue' # Change accordingly
+ALLIANCE_COLOR = None #default red changed using runtime argument
 USERNAME = 'root'
 PASSWORD = 'root'
 
@@ -352,4 +351,24 @@ def main():
     
     
 if __name__ == "__main__":
+    # Init Process arguments
+    parser = argparse.ArgumentParser(
+        description = "Cheesy Arena Power Port Scoring Module"
+    )
+    
+    # Optional Arguments
+    parser.add_argument('-a','--alliance', help="Alliance Colr", default = 'red', type=str)
+    
+    args = parser.parse_args()
+    
+    if (args.alliance.lower() == 'blue'):
+        print('Set to blue')
+        ALLIANCE_COLOR = args.alliance.lower()
+    elif (args.alliance.lower() == 'red'):
+        print('Set to red')
+        ALLIANCE_COLOR = args.alliance.lower()
+    else:
+        print('Invalid Color input! Set to default red')
+        ALLIANCE_COLOR = 'red'
+    
     main()
