@@ -167,11 +167,9 @@ Flip Flop on every MSG recieved
 """
 def blink_led():
     if GPIO.input(LED_Pin):
-        #RGB.strip_fill(Color(255, 0, 0))
         RGB.strip_set_LED(0,RGB.LED_SOL,Color(63,63,63))
         GPIO.output(LED_Pin,0)
     else:
-        #RGB.strip_fill(Color(0, 0, 255))
         RGB.strip_set_LED(0,RGB.LED_SOL,Color(255,255,255))
         GPIO.output(LED_Pin,1)
         
@@ -197,26 +195,18 @@ def ws_msg(self, msg):
                     last_matchstate = m_state
                 elif m_state == 1 and m_state != last_matchstate:                    
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 elif m_state == 2 and m_state != last_matchstate:                    
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 elif m_state == 3 and m_state != last_matchstate:                    
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 elif m_state == 4 and m_state != last_matchstate:                    
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 elif m_state == 5 and m_state != last_matchstate:
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 elif m_state == 6 and m_state != last_matchstate:                    
                     last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)                    
                 else:
-                    last_matchstate = m_state
-                    #strip_control(last_matchstate, total_cells)
-                    
+                    last_matchstate = m_state                    
     else:
         if j['type'] == "realtimeScore":
             #print("Is RealtimeScore") 
@@ -323,6 +313,18 @@ def open_websocket():
     print("Run Forever")
     ws.run_forever()
     
+def createLEDS():
+    RGB.create_strip(args.led_count, args.led_pin, args.led_sol, args.led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
+    def update():
+        while(True):
+            RGB.strip_set_LED(3,4,Color(63,63,63))
+            print('**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^**')
+            time.sleep(2)
+            print('**vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv**')
+            RGB.strip_set_LED(3,4,Color(200,200,200))
+            time.sleep(2)
+            
+    thread.start_new_thread(update, ())
 
 def main():
             
@@ -340,6 +342,9 @@ def main():
         if(response == 0): break
         time.sleep(2)
     time.sleep(1)
+    
+    print("Crate LED")
+    createLEDS()
     print("Open Web Socket")
     open_websocket()
     
@@ -369,6 +374,6 @@ if __name__ == "__main__":
         print('Invalid Color input! Set to default red')
         ALLIANCE_COLOR = 'red'
 
-    RGB.create_strip(args.led_count, args.led_pin, args.led_sol, args.led_max_score,RGB.get_aliance_color_RGB(ALLIANCE_COLOR))
+    
     
     main()
