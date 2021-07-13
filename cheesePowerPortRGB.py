@@ -156,55 +156,54 @@ def strip_fill(color):
 This Defenition is called after each message to set the LED depending on the field State
 """
 def strip_control(alliance_color, matchstate, total_cells):
-	#prematch
-	if matchstate == 0:
-		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("green"))
-	#prematch
-	elif matchstate == 1:
-		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
-	#prematch
-	elif matchstate == 2:
-		strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
-	#auto
-	elif matchstate == 3:
-		if total_cells > LED_MAX_SCORE:
-			theaterChase(alliance_color)
-		else:
-			LED_Score(alliance_color, total_cells)
-	#pause
-	elif matchstate == 4:
-		if total_cells > LED_MAX_SCORE:
-			theaterChase(alliance_color)
-		else:
-			LED_Score(alliance_color, total_cells)
-	#teleop
-	elif matchstate == 5:
-		if total_cells > LED_MAX_SCORE:
-			theaterChase(alliance_color)
-		else:
-			LED_Score(alliance_color, total_cells)
-	#post match
-	elif matchstate == 6:
-		strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
-	else:
-		pass
+    if matchstate == 0: #post match
+        strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("green"))
+    elif matchstate == 1:
+        #prematch
+        strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+    elif matchstate == 2:
+        #prematch
+        strip_set_LED(LED_SOL,strip.numPixels(),Color(0, 0, 0))
+    elif matchstate == 3:
+        #auto
+        if total_cells > LED_MAX_SCORE:
+            theaterChase(alliance_color)
+        else:
+            LED_Score(alliance_color, total_cells)
+    elif matchstate == 4:
+        #pause
+        if total_cells > LED_MAX_SCORE:
+            theaterChase(alliance_color)
+        else:
+            LED_Score(alliance_color, total_cells)
+    elif matchstate == 5:
+        #teleop
+        if total_cells > LED_MAX_SCORE:
+            theaterChase(alliance_color)
+        else:
+            LED_Score(alliance_color, total_cells)
+    elif matchstate == 6:
+        #post match
+        strip_set_LED(LED_SOL,strip.numPixels(),get_field_color_RGB("violet"))
+    else:
+        pass
 
 """
 Simple Fill Strip from the start to the End by the percentage of scored
 """	
 def LED_Score(alliance_color, total_cells):
-	useable = strip.numPixels() - LED_SOL
-	""" Fill strip with Percentage relitive to max"""
-	for i in range(LED_SOL,int(total_cells/LED_MAX_SCORE*useable)):
-		strip.setPixelColor(i, get_aliance_color_RGB(alliance_color))
-	""" Fill remaining strip off"""
-	if int(total_cells/LED_MAX_SCORE*useable)<LED_SOL:
-	    blankStart = LED_SOL
-	else:
-	    blankStart = int(total_cells/LED_MAX_SCORE*useable)
-	for i in range(blankStart,LED_COUNT):
-		strip.setPixelColor(i, Color(0,0,0))
-	strip.show()
+    useable = strip.numPixels() - LED_SOL
+    """ Fill strip with Percentage relitive to max"""
+    for i in range(LED_SOL,int(total_cells/LED_MAX_SCORE*useable)):
+        strip.setPixelColor(i, get_aliance_color_RGB(alliance_color))
+    """ Fill remaining strip off"""
+    if int(total_cells/LED_MAX_SCORE*useable)<LED_SOL:
+        blankStart = LED_SOL
+    else:
+        blankStart = int(total_cells/LED_MAX_SCORE*useable)
+    for i in range(blankStart,LED_COUNT):
+        strip.setPixelColor(i, Color(0,0,0))
+    strip.show()
 
 """
 start of Marque
